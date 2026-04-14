@@ -3,9 +3,9 @@ require_once __DIR__ . '/lib/auth.php';
 
 $token = trim($_GET['token'] ?? '');
 $success = false;
-$message = 'Token verifikasi tidak valid atau sudah kadaluarsa.';
+$message = 'Token verifikasi tidak valid atau sudah kedaluwarsa.';
 
-if ($token !== '') {
+if ($token !== '' && preg_match('/^[a-f0-9]{64}$/', $token) === 1) {
     $pdo = db();
     $stmt = $pdo->prepare(
         'SELECT ev.id, ev.user_id
@@ -20,18 +20,25 @@ if ($token !== '') {
     $verification = $stmt->fetch();
 
     if ($verification) {
-        $pdo->beginTransaction();
+        try {
+            $pdo->beginTransaction();
 
-        $updateUser = $pdo->prepare('UPDATE users SET is_verified = 1 WHERE id = :id');
-        $updateUser->execute(['id' => $verification['user_id']]);
+            $updateUser = $pdo->prepare('UPDATE users SET is_verified = 1 WHERE id = :id');
+            $updateUser->execute(['id' => (int) $verification['user_id']]);
 
-        $updateToken = $pdo->prepare('UPDATE email_verifications SET used_at = NOW() WHERE id = :id');
-        $updateToken->execute(['id' => $verification['id']]);
+            $updateToken = $pdo->prepare('UPDATE email_verifications SET used_at = NOW() WHERE id = :id');
+            $updateToken->execute(['id' => (int) $verification['id']]);
 
-        $pdo->commit();
+            $pdo->commit();
+            $success = true;
+            $message = 'Verifikasi berhasil! Sekarang kamu bisa login.';
+        } catch (Throwable $e) {
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
 
-        $success = true;
-        $message = 'Verifikasi berhasil! Sekarang kamu bisa login.';
+            $message = 'Terjadi kendala saat verifikasi. Coba lagi beberapa saat.';
+        }
     }
 }
 ?>

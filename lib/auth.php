@@ -3,6 +3,10 @@
 require_once __DIR__ . '/db.php';
 
 if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_set_cookie_params([
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ]);
     session_start();
 }
 
@@ -18,8 +22,8 @@ function current_user(): ?array
         return null;
     }
 
-    $stmt = db()->prepare('SELECT id, name, email, is_verified, points FROM users WHERE id = :id LIMIT 1');
-    $stmt->execute(['id' => $_SESSION['user_id']]);
+    $stmt = db()->prepare('SELECT id, name, email, role, is_verified, points FROM users WHERE id = :id LIMIT 1');
+    $stmt->execute(['id' => (int) $_SESSION['user_id']]);
 
     $user = $stmt->fetch();
 
@@ -44,10 +48,23 @@ function require_auth(): array
     return $user;
 }
 
+function require_admin(): array
+{
+    $user = require_auth();
+
+    if (($user['role'] ?? 'user') !== 'admin') {
+        flash_set('danger', 'Akses ditolak. Halaman ini khusus admin.');
+        redirect('/dashboard.php');
+    }
+
+    return $user;
+}
+
 function flash_set(string $type, string $message): void
 {
+    $allowed = ['success', 'danger', 'warning', 'info'];
     $_SESSION['flash'] = [
-        'type' => $type,
+        'type' => in_array($type, $allowed, true) ? $type : 'info',
         'message' => $message,
     ];
 }
@@ -62,4 +79,22 @@ function flash_get(): ?array
     unset($_SESSION['flash']);
 
     return $flash;
+}
+
+function csrf_token(): string
+{
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+
+    return $_SESSION['csrf_token'];
+}
+
+function csrf_validate(?string $token): bool
+{
+    if (!$token || empty($_SESSION['csrf_token'])) {
+        return false;
+    }
+
+    return hash_equals($_SESSION['csrf_token'], $token);
 }

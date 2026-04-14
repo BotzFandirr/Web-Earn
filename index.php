@@ -27,7 +27,7 @@ $user = current_user();
             <?php if ($user): ?>
                 <a class="btn btn-gradient btn-sm" href="dashboard.php">Buka Dashboard</a>
             <?php else: ?>
-                <a class="btn btn-outline-light btn-sm" href="login.php">Login</a>
+                <a class="btn btn-soft btn-sm" href="login.php">Login</a>
                 <a class="btn btn-gradient btn-sm" href="register.php">Daftar</a>
             <?php endif; ?>
         </div>
@@ -37,10 +37,10 @@ $user = current_user();
         <div>
             <span class="badge text-bg-info mb-3">Platform Reward + Saldo DANA</span>
             <h1>Bangun web penghasil cuan untuk user, sambil monetisasi iklan kamu.</h1>
-            <p>CuanTask siap dipakai sebagai MVP: landing page, sistem daftar + login, verifikasi email URL unik via SMTP, dan dashboard task bergaya aplikasi.</p>
+            <p>CuanTask siap dipakai sebagai MVP: landing page, sistem daftar + login, verifikasi email URL unik via SMTP, role user/admin, dan dashboard task bergaya aplikasi.</p>
             <div class="d-flex gap-2 flex-wrap mt-4">
                 <a class="btn btn-gradient" href="register.php"><i class="fa-solid fa-rocket me-1"></i> Mulai Gratis</a>
-                <a class="btn btn-outline-light" href="login.php">Saya sudah punya akun</a>
+                <a class="btn btn-soft" href="login.php">Saya sudah punya akun</a>
             </div>
         </div>
         <div class="hero-stats">
@@ -66,9 +66,9 @@ $user = current_user();
             <p>Pendaftaran pakai email dan link verifikasi token unik.</p>
         </article>
         <article class="glass-card p-3">
-            <i class="fa-solid fa-database mb-2"></i>
-            <h5>MySQL (phpMyAdmin)</h5>
-            <p>Struktur database siap import melalui phpMyAdmin.</p>
+            <i class="fa-solid fa-user-shield mb-2"></i>
+            <h5>Role User & Admin</h5>
+            <p>Hak akses halaman dibedakan aman antara user dan admin.</p>
         </article>
         <article class="glass-card p-3">
             <i class="fa-solid fa-bell mb-2"></i>

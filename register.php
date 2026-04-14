@@ -7,13 +7,17 @@ require_guest();
 $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!csrf_validate($_POST['csrf_token'] ?? null)) {
+        $errors[] = 'Sesi formulir tidak valid. Muat ulang halaman lalu coba lagi.';
+    }
+
     $name = trim($_POST['name'] ?? '');
     $email = strtolower(trim($_POST['email'] ?? ''));
     $password = $_POST['password'] ?? '';
     $confirmPassword = $_POST['confirm_password'] ?? '';
 
-    if ($name === '') {
-        $errors[] = 'Nama wajib diisi.';
+    if ($name === '' || mb_strlen($name) > 120) {
+        $errors[] = 'Nama wajib diisi dan maksimal 120 karakter.';
     }
 
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -39,14 +43,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
             $insertUser = $pdo->prepare(
-                'INSERT INTO users (name, email, password_hash, is_verified, points, created_at)
-                VALUES (:name, :email, :password_hash, 0, 0, NOW())'
+                'INSERT INTO users (name, email, password_hash, role, is_verified, points, created_at)
+                VALUES (:name, :email, :password_hash, :role, 0, 0, NOW())'
             );
 
             $insertUser->execute([
                 'name' => $name,
                 'email' => $email,
                 'password_hash' => $passwordHash,
+                'role' => 'user',
             ]);
 
             $userId = (int) $pdo->lastInsertId();
@@ -64,14 +69,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $app = app_config()['app'];
             $verificationUrl = rtrim($app['url'], '/') . '/verify.php?token=' . urlencode($token);
+            $safeName = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
 
-            $subject = 'Verifikasi akun CuanTask kamu';
+            $subject = 'Aktifkan akun CuanTask kamu 🚀';
             $htmlBody = "
-                <h2>Halo {$name},</h2>
-                <p>Terima kasih sudah daftar di CuanTask.</p>
-                <p>Silakan klik link berikut untuk verifikasi email:</p>
-                <p><a href=\"{$verificationUrl}\">Verifikasi Email Sekarang</a></p>
-                <p>Link berlaku 24 jam.</p>
+                <div style=\"font-family:Arial,sans-serif;background:#f4f8ff;padding:24px;color:#1f2a44;\">
+                    <div style=\"max-width:520px;margin:auto;background:#ffffff;border-radius:16px;padding:24px;border:1px solid #e5edff;\">
+                        <h2 style=\"margin:0 0 12px;color:#153e90;\">Halo {$safeName}, 👋</h2>
+                        <p style=\"margin:0 0 12px;line-height:1.6;\">Terima kasih sudah bergabung di <strong>CuanTask</strong>! Biar akun kamu aktif penuh, tinggal verifikasi email sekarang.</p>
+                        <p style=\"margin:0 0 20px;line-height:1.6;\">Klik tombol di bawah ini untuk lanjut:</p>
+
+                        <a href=\"{$verificationUrl}\" style=\"display:inline-block;padding:12px 18px;border-radius:10px;background:linear-gradient(135deg,#00d2ff,#3a7bff,#7f5bff);color:#ffffff;text-decoration:none;font-weight:700;\">✅ Verifikasi Sekarang</a>
+
+                        <p style=\"margin:20px 0 0;line-height:1.6;color:#516182;\">Jika tombol tidak bisa diklik, salin link ini ke browser:</p>
+                        <p style=\"word-break:break-all;margin:8px 0 0;color:#1d4ed8;\">{$verificationUrl}</p>
+                        <p style=\"margin:18px 0 0;color:#6b7a99;font-size:13px;\">Link ini berlaku selama <strong>24 jam</strong>.</p>
+                    </div>
+                </div>
             ";
 
             $sent = smtp_send_verification($email, $name, $subject, $htmlBody);
@@ -81,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 redirect('/login.php');
             }
 
-            $errors[] = 'Akun berhasil dibuat, tapi email verifikasi gagal dikirim. Cek konfigurasi SMTP di config.php.';
+            $errors[] = 'Akun dibuat, tetapi email verifikasi gagal dikirim. Periksa konfigurasi SMTP di config.php.';
         }
     }
 }
@@ -101,8 +115,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
 <div class="auth-shell">
     <form method="post" class="auth-card glass-card">
-        <h1 class="mb-2">Buat Akun</h1>
-        <p class="text-light-emphasis mb-4">Daftar pakai email dan verifikasi link unik via SMTP.</p>
+        <h1 class="mb-2">Buat Akun Baru</h1>
+        <p class="auth-copy mb-4">Daftar dengan email aktif, lalu verifikasi lewat tautan unik yang kami kirimkan via SMTP.</p>
 
         <?php if ($errors): ?>
             <div class="alert alert-danger">
@@ -114,9 +128,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         <?php endif; ?>
 
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(csrf_token()) ?>">
+
         <div class="mb-3">
             <label class="form-label">Nama Lengkap</label>
-            <input name="name" class="form-control" required value="<?= htmlspecialchars($_POST['name'] ?? '') ?>">
+            <input name="name" class="form-control" maxlength="120" required value="<?= htmlspecialchars($_POST['name'] ?? '') ?>">
         </div>
         <div class="mb-3">
             <label class="form-label">Email</label>
@@ -132,7 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <button class="btn btn-gradient w-100" type="submit">Daftar Sekarang</button>
-        <p class="mt-3 mb-0 text-center text-light-emphasis">Sudah punya akun? <a href="login.php" class="text-info">Login</a></p>
+        <p class="mt-3 mb-0 text-center auth-copy">Sudah punya akun? <a href="login.php" class="text-info fw-semibold">Login di sini</a></p>
     </form>
 </div>
 </body>
