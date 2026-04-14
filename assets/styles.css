@@ -21,18 +21,128 @@ body {
   background: radial-gradient(circle at top right, #1a3d7a 0%, var(--bg-2) 35%, var(--bg-1) 100%);
 }
 
-.app-shell {
-  width: min(980px, 100%);
-  margin: 0 auto;
-  padding: 24px 18px 120px;
-}
-
 .glass-card {
   background: var(--glass);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 18px;
+}
+
+.btn-gradient {
+  border: 0;
+  color: #fff;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-2), var(--accent-3));
+  border-radius: 12px;
+  padding: 10px 14px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-gradient:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(0, 210, 255, 0.35);
+  color: #fff;
+}
+
+/* Landing */
+.landing-shell {
+  width: min(1050px, 100%);
+  margin: 0 auto;
+  padding: 24px 18px 40px;
+}
+
+.landing-nav {
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.hero {
+  padding: 28px;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 18px;
+}
+
+.hero h1 {
+  font-size: 2rem;
+  font-weight: 800;
+}
+
+.hero p {
+  color: var(--muted);
+}
+
+.hero-stats {
+  display: grid;
+  gap: 10px;
+}
+
+.hero-stats p {
+  margin: 0 0 4px;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.hero-stats h3 {
+  margin: 0;
+  font-weight: 700;
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.features i {
+  font-size: 1.2rem;
+  color: #8cf5ff;
+}
+
+.features p {
+  color: var(--muted);
+  margin-bottom: 0;
+}
+
+/* Auth pages */
+.auth-shell {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.auth-card {
+  width: min(460px, 100%);
+  padding: 22px;
+}
+
+.auth-card .form-label {
+  color: #d6e2ff;
+}
+
+.auth-card .form-control {
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.auth-card .form-control:focus {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  border-color: #74cdff;
+  box-shadow: 0 0 0 .2rem rgba(52, 182, 255, .2);
+}
+
+/* Dashboard */
+.app-shell {
+  width: min(980px, 100%);
+  margin: 0 auto;
+  padding: 24px 18px 120px;
 }
 
 .topbar,
@@ -61,22 +171,6 @@ h2 {
 
 .wallet-card small {
   color: var(--muted);
-}
-
-.btn-gradient {
-  border: 0;
-  color: #fff;
-  font-weight: 700;
-  background: linear-gradient(135deg, var(--accent-1), var(--accent-2), var(--accent-3));
-  border-radius: 12px;
-  padding: 10px 14px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.btn-gradient:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(0, 210, 255, 0.35);
-  color: #fff;
 }
 
 .stats-grid {
@@ -172,12 +266,18 @@ h2 {
 }
 
 @media (max-width: 768px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+
+  .features,
   .stats-grid {
     grid-template-columns: 1fr;
   }
 
   .topbar,
-  .wallet-card {
+  .wallet-card,
+  .landing-nav {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
