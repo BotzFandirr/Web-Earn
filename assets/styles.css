@@ -46,9 +46,9 @@ body {
 }
 
 .btn-soft {
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  background: rgba(255, 255, 255, 0.08);
-  color: #eaf1ff;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
   border-radius: 12px;
   padding: 10px 14px;
   font-weight: 600;
@@ -160,7 +160,7 @@ body {
 }
 
 .withdraw-copy {
-  color: #8a96ab;
+  color: #4c6086;
   line-height: 1.55;
   font-size: 0.93rem;
 }
@@ -307,9 +307,33 @@ h2 {
   background: rgba(58, 123, 255, 0.16);
 }
 
+
 .modal-content {
   border-radius: 18px;
   border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #ffffff;
+  color: #1f2a44;
+}
+
+.modal-content .form-label {
+  color: #2a3f68;
+  font-weight: 700;
+}
+
+.modal-content .form-control {
+  color: #1f2a44;
+  background: #f6f9ff;
+  border: 1px solid #d6e2ff;
+}
+
+.modal-content .form-control::placeholder {
+  color: #7c8fb2;
+}
+
+.modal-content .btn-soft {
+  color: #1f2a44;
+  background: #edf3ff;
+  border: 1px solid #cdddfd;
 }
 
 @media (max-width: 768px) {

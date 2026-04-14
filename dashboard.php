@@ -43,7 +43,7 @@ $tasks = [
             <small class="auth-copy">Role akun: <strong><?= htmlspecialchars($user['role']) ?></strong></small>
         </div>
         <div class="d-flex gap-2 flex-wrap">
-            <a class="btn btn-soft btn-sm px-3" href="/">Landing</a>
+            <a class="btn btn-light btn-sm px-3" href="/">Landing</a>
             <?php if ($user['role'] === 'admin'): ?>
                 <a class="btn btn-gradient btn-sm px-3" href="admin.php">Admin Panel</a>
             <?php endif; ?>

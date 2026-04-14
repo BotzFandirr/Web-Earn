@@ -27,7 +27,7 @@ $user = current_user();
             <?php if ($user): ?>
                 <a class="btn btn-gradient btn-sm" href="dashboard.php">Buka Dashboard</a>
             <?php else: ?>
-                <a class="btn btn-soft btn-sm" href="login.php">Login</a>
+                <a class="btn btn-light btn-sm" href="login.php">Login</a>
                 <a class="btn btn-gradient btn-sm" href="register.php">Daftar</a>
             <?php endif; ?>
         </div>
